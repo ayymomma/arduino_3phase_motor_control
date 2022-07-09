@@ -137,32 +137,62 @@ void CH_BL()
 */
 void bldc_move()
 {
-  switch(bldc_step)
-  {
-    case 0:
-      AH_BL();
-      BEMF_C_FALLING();
-      break;
-    case 1:
-      AH_CL();
-      BEMF_B_RISING();
-      break;
-    case 2:
-      BH_CL();
-      BEMF_A_FALLING();
-      break;
-    case 3:
-      BH_AL();
-      BEMF_C_RISING();
-      break;
-    case 4:
-      CH_AL();
-      BEMF_B_FALLING();
-      break;
-    case 5:
-      CH_BL();
-      BEMF_A_RISING();
-  }
+  if(sns == 1)
+    switch(bldc_step)
+    {
+      case 0:
+        AH_BL();
+        BEMF_C_FALLING();
+        break;
+      case 1:
+        AH_CL();
+        BEMF_B_RISING();
+        break;
+      case 2:
+        BH_CL();
+        BEMF_A_FALLING();
+        break;
+      case 3:
+        BH_AL();
+        BEMF_C_RISING();
+        break;
+      case 4:
+        CH_AL();
+        BEMF_B_FALLING();
+        break;
+      case 5:
+        CH_BL();
+        BEMF_A_RISING();
+    }
+  else
+    switch(bldc_step)
+    {
+      case 0:
+        CH_BL();
+        BEMF_A_FALLING();
+        break;
+      case 1:
+        CH_AL();
+        BEMF_B_RISING();
+        break;
+      case 2:
+        BH_AL();
+        BEMF_C_FALLING();
+        break;
+      case 3:
+        BH_CL();
+        BEMF_A_RISING();
+        break;
+      case 4:
+        AH_CL();
+        BEMF_B_FALLING();
+        break;
+      case 5:
+        AH_BL();
+        BEMF_C_RISING();
+    }
+    
+
 }
 // intrerupere schimbare pe pinul 2 (PCINT2) ISR
 ISR (PCINT2_vect)
@@ -203,10 +233,8 @@ void start_motor(int i){
     {
       delayMicroseconds(i);
       bldc_move();
-      bldc_step = bldc_step + sns;
+      bldc_step++;
       bldc_step %= 6;
-      if(bldc_step < 0)
-        bldc_step = 5;
       Serial.println(bldc_step);
       i = i - 20;
     }
